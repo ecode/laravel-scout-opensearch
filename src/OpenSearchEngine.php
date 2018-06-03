@@ -31,13 +31,18 @@ class OpenSearchEngine extends Engine
     protected $searchClient;
     protected $suggestClient;
     protected $config;
+    protected $suggestName;
+    protected $appName;
 
     public function __construct(Repository $config)
     {
-        $accessKeyID     = $config->get('scout.opensearch.accessKeyID');
-        $accessKeySecret = $config->get('scout.opensearch.accessKeySecret');
-        $host            = $config->get('scout.opensearch.host');
-        $this->config    = $config; // todo
+        $accessKeyID          = $config->get('scout.opensearch.accessKey');
+        $accessKeySecret      = $config->get('scout.opensearch.accessSecret');
+        $host                 = $config->get('scout.opensearch.host');
+
+        $this->appName        = $config->get('scout.opensearch.appName');
+        $this->suggestName    = $config->get('scout.opensearch.suggestName');
+        $this->config         = $config; // todo
 
         $this->client         = new OpenSearchClient($accessKeyID, $accessKeySecret, $host);
         $this->documentClient = new DocumentClient($this->client);
@@ -45,20 +50,11 @@ class OpenSearchEngine extends Engine
         $this->suggestClient  = new SuggestClient($this->client);
     }
 
-    public function update($models)
-    {
-        $this->performDocumentsCommand($models, 'ADD');
-    }
+    public function update($models){}
 
-    public function delete($models)
-    {
-        $this->performDocumentsCommand($models, 'DELETE');
-    }
+    public function delete($models){}
 
-    public function search(Builder $builder)
-    {
-        return $this->getOpenSearch($builder, 0, 20);
-    }
+    public function search(Builder $builder){}
 
     public function paginate(Builder $builder, $perPage, $page)
     {
@@ -75,6 +71,12 @@ class OpenSearchEngine extends Engine
         return collect(array_get($result, 'result.items'))->pluck('fields.id')->values();
     }
 
+    /**
+     * @param mixed  $results
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
+     * @return Collection|\Illuminate\Support\Collection
+     */
     public function map($results, $model)
     {
         $result = $this->checkResults($results);
@@ -86,7 +88,7 @@ class OpenSearchEngine extends Engine
         $models = $model->whereIn($model->getQualifiedKeyName(), $keys)->get()->keyBy($model->getKeyName());
 
         return collect(array_get($result, 'result.items'))->map(function ($item) use ($model, $models) {
-            $key = $item['fields']['id'];
+            $key = $item['fields']['id']; // todo
 
             if (isset($models[$key])) {
                 return $models[$key];
@@ -94,39 +96,16 @@ class OpenSearchEngine extends Engine
         })->filter()->values();
     }
 
+    /**
+     * @param mixed $results
+     *
+     * @return mixed
+     */
     public function getTotalCount($results)
     {
         $result = $this->checkResults($results);
 
         return array_get($result, 'result.total', 0);
-    }
-
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection $models
-     * @param string                                   $cmd
-     */
-    protected function performDocumentsCommand($models, string $cmd)
-    {
-        if ($models->count() === 0) {
-            return;
-        }
-        $appName   = $models->first()->openSearchAppName();
-        $tableName = $models->first()->getTable();
-
-        $docs = $models->map(function ($model) use ($cmd) {
-            $fields = $model->toSearchableArray();
-
-            if (empty($fields)) {
-                return [];
-            }
-
-            return [
-                'cmd'    => $cmd,
-                'fields' => $fields,
-            ];
-        });
-        $json = json_encode($docs);
-        $this->documentClient->push($json, $appName, $tableName);
     }
 
     /**
@@ -143,7 +122,7 @@ class OpenSearchEngine extends Engine
         $params = new SearchParamsBuilder();
         $params->setStart($from);
         $params->setHits($count);
-        $params->setAppName($builder->model->openSearchAppName());
+        $params->setAppName($this->appName);
         //设置查询query
         if ($builder->index) {
             $params->setQuery("$builder->index:'$builder->query'");
@@ -153,15 +132,21 @@ class OpenSearchEngine extends Engine
 
         if ($builder->fields) {
             //设置需返回哪些字段
-            $params->setFetchFields(["'$builder->fields'"]); //todo
+            $params->setFetchFields($builder->fields);
         }
-        //设置文档过滤条件
-        // $params->setFilter('is_sale=0'); //todo
+
+        if ($builder->filters) {
+            //设置文档过滤条件
+            foreach ($builder->filters as $value) {
+                $params->setFilter(implode('',$value));
+            }
+        }
 
         $params->setFormat('fullJson');
         $params->addSort($builder->model->sortField(), SearchParamsBuilder::SORT_DECREASE);
 
-        return $this->searchClient->execute($params->build());
+        $res = $this->searchClient->execute($params->build());
+        return $res;
     }
 
     /**
@@ -174,8 +159,8 @@ class OpenSearchEngine extends Engine
     public function getSuggestSearch(Builder $builder)
     {
         $params = SuggestParamsBuilder::build(
-                $builder->model->openSearchAppName(),
-                $builder->model->openSearchSuggestName(),
+                $this->appName,
+                $this->suggestName,
                 $builder->query, 10
         );
 

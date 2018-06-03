@@ -9,6 +9,7 @@
  */
 namespace Ecode\OpenSearch;
 
+use Closure;
 use Illuminate\Pagination\Paginator;
 use Laravel\Scout\Builder as ScoutBuilder;
 use Illuminate\Database\Eloquent\Collection;
@@ -172,7 +173,7 @@ class OpenSearchBuilder extends ScoutBuilder
      * Set the "limit" for the search query.
      *
      * @param  int  $limit
-     * @return Laravel\Scout\Builder
+     * @return \Laravel\Scout\Builder
      */
     public function take($limit)
     {
@@ -246,12 +247,16 @@ class OpenSearchBuilder extends ScoutBuilder
      */
     public function select($fields = null)
     {
-        if (empty($fields)) {
-            $fields = $this->model->getSearchableFields();
+        try {
+            if (empty($fields)) {
+                $fields = $this->model->getSearchableFields();
 
-            if (! is_array($fields)) {
-                $fields = explode(',', $fields);
+                if (! is_array($fields)) {
+                    $fields = explode(',', $fields);
+                }
             }
+        } catch (\Exception $e) {
+            return $this;
         }
 
         $this->fields = $fields;
@@ -352,7 +357,7 @@ class OpenSearchBuilder extends ScoutBuilder
      */
     public function suggest()
     {
-        return $this->engine()->suggestSearch($this);
+        return $this->engine()->getSuggestSearch($this);
     }
 
     /**

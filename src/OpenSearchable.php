@@ -10,6 +10,7 @@
 
 namespace Ecode\OpenSearch;
 
+use Closure;
 use Laravel\Scout\Searchable as ScoutSearchable;
 
 trait OpenSearchable
@@ -22,7 +23,7 @@ trait OpenSearchable
      */
     public function openSearchAppName(): string
     {
-        return config('scout.opensearch.app.name');
+        return config('scout.opensearch.appName');
     }
 
     /**
@@ -31,7 +32,7 @@ trait OpenSearchable
      */
     public function openSearchSuggestName(): string
     {
-        return config('scout.opensearch.suggest.name');
+        return config('scout.opensearch.suggestName');
     }
     /**
      * Get the sort field for the model.
@@ -46,8 +47,9 @@ trait OpenSearchable
      * Perform a search against the model's indexed data.
      *
      * @param  string  $query
-     * @param  Closure  $callback
-     * @return Ecode\OpenSearch\OpenSearchBuilder
+     * @param  Closure $callback
+     *
+     * @return OpenSearchBuilder
      */
     public static function search($query, $callback = null)
     {
