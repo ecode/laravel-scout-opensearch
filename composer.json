@@ -1,0 +1,29 @@
+{
+    "name": "ecode/laravel-scout-opensearch",
+    "description": "Aliyun OpenSearch for Laravel 5.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bruce",
+            "email": "bigtop168@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "illuminate/support": "~5.4",
+        "laravel/scout": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ecode\\OpenSearch\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ecode\\OpenSearch\\OpenSearchServiceProvider"
+            ]
+        }
+    }
+}
