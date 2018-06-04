@@ -20,6 +20,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
     
 3. 在 scout.php 添加配置
 
+```
     'opensearch'    => [
             'accessKey'    => env('OPENSEARCH_ACCESS_KEY'),
             'accessSecret' => env('OPENSEARCH_ACCESS_SECRET'),
@@ -28,6 +29,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
             'host'         => env('OPENSEARCH_HOST'),
             'debug'        => env('OPENSEARCH_DEBUG'),
     ],
+    ```
 
 4. 修改 `.env` 配置 scout driver；
 
