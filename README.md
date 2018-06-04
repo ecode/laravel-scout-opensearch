@@ -29,7 +29,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
             'host'         => env('OPENSEARCH_HOST'),
             'debug'        => env('OPENSEARCH_DEBUG'),
     ],
-    ```
+```
 
 4. 修改 `.env` 配置 scout driver；
 
