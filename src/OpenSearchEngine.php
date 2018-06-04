@@ -138,8 +138,9 @@ class OpenSearchEngine extends Engine
         if ($builder->filters) {
             //设置文档过滤条件
             foreach ($builder->filters as $value) {
-                $params->setFilter(implode('',$value));
+                $arr[] = implode('',$value);
             }
+            $params->setFilter(implode(' AND ',$arr));
         }
 
         $params->setFormat('fullJson');
