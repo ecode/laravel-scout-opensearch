@@ -46,7 +46,5 @@ Laravel Scout 的阿里云 Open Search 驱动。
 
 ## Desciption
 
-    ```
         Based: https://github.com/ruogoo/laravel-scout-opensearch
         And:   https://github.com/lingxi/ali-opensearch-sdk
-    ```
