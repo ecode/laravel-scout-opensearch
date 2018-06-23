@@ -34,6 +34,24 @@ trait OpenSearchable
     {
         return config('scout.opensearch.suggestName');
     }
+
+    /**
+     * Enable debug for the model defined in Aliyun Open Search.
+     * @return string
+     */
+    public function openSearchDebug(): string
+    {
+        return config('scout.opensearch.debug');
+    }
+
+    /**
+     * Set a timeout for the model defined in Aliyun Open Search.
+     * @return string
+     */
+    public function openSearchTimeout(): string
+    {
+        return config('scout.opensearch.timeout');
+    }
     /**
      * Get the sort field for the model.
      * @return string

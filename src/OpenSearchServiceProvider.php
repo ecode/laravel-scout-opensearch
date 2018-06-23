@@ -18,12 +18,12 @@ class OpenSearchServiceProvider extends ServiceProvider
     /**
      * register
      */
-    public function register()
+    public function register(){}
+
+    public function boot()
     {
-        $this->app[EngineManager::class]->extend('opensearch', function ($app) {
+        resolve(EngineManager::class)->extend('opensearch', function ($app) {
             return new OpenSearchEngine($app['config']);
         });
     }
-
-    public function boot(){}
 }

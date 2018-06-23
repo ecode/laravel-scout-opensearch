@@ -39,12 +39,14 @@ class OpenSearchEngine extends Engine
         $accessKeyID          = $config->get('scout.opensearch.accessKey');
         $accessKeySecret      = $config->get('scout.opensearch.accessSecret');
         $host                 = $config->get('scout.opensearch.host');
+        $option['debug']      = $config->get('scout.opensearch.debug');
+        $option['timeout']    = $config->get('scout.opensearch.timeout');
+
 
         $this->appName        = $config->get('scout.opensearch.appName');
         $this->suggestName    = $config->get('scout.opensearch.suggestName');
-        $this->config         = $config; // todo
 
-        $this->client         = new OpenSearchClient($accessKeyID, $accessKeySecret, $host);
+        $this->client         = new OpenSearchClient($accessKeyID, $accessKeySecret, $host, $option);
         $this->documentClient = new DocumentClient($this->client);
         $this->searchClient   = new SearchClient($this->client);
         $this->suggestClient  = new SuggestClient($this->client);
@@ -87,13 +89,15 @@ class OpenSearchEngine extends Engine
         $keys   = collect(array_get($result, 'result.items'))->pluck('fields.id')->values()->all();
         $models = $model->whereIn($model->getQualifiedKeyName(), $keys)->get()->keyBy($model->getKeyName());
 
-        return collect(array_get($result, 'result.items'))->map(function ($item) use ($model, $models) {
+        $res = collect(array_get($result, 'result.items'))->map(function ($item) use ($model, $models) {
             $key = $item['fields']['id']; // todo
 
             if (isset($models[$key])) {
                 return $models[$key];
             }
         })->filter()->values();
+
+        return $res;
     }
 
     /**

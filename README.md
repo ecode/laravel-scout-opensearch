@@ -28,6 +28,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
                 'suggestName'  => env('OPENSEARCH_SUGGEST_NAME'),
                 'host'         => env('OPENSEARCH_HOST'),
                 'debug'        => env('OPENSEARCH_DEBUG'),
+                'timeout'      => env('OPENSEARCH_TIMEOUT'),
         ],
     ```
 
