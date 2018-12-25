@@ -389,7 +389,7 @@ class OpenSearchBuilder extends ScoutBuilder
         $this->forPage($page, $perPage);
 
         $results = Collection::make($engine->map(
-            $rawResults = $engine->paginate($this, $perPage, $page), $this->model
+            $this, $rawResults = $engine->paginate($this, $perPage, $page), $this->model
         ));
 
         $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [

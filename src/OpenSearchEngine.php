@@ -79,7 +79,7 @@ class OpenSearchEngine extends Engine
      *
      * @return Collection|\Illuminate\Support\Collection
      */
-    public function map($results, $model)
+    public function map(Builder $builder, $results, $model)
     {
         $result = $this->checkResults($results);
 
@@ -185,5 +185,10 @@ class OpenSearchEngine extends Engine
         }
 
         return $result;
+    }
+
+    public function flush($model)
+    {
+
     }
 }
