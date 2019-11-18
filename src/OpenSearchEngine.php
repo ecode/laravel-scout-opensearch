@@ -146,9 +146,22 @@ class OpenSearchEngine extends Engine
             }
             $params->setFilter(implode(' AND ',$arr));
         }
+        
+        // 设置排序条件
+        if ($builder->orders) {
+            foreach ($builder->orders as $value) {
+                list($field, $sort) = array_values($value);
+                if ($sort == 'asc') {
+                    $params->addSort($field, SearchParamsBuilder::SORT_INCREASE);
+                } elseif ($sort == 'desc') {
+                    $params->addSort($field, SearchParamsBuilder::SORT_DECREASE);
+                }
+            }
+        } else {
+            $params->addSort($builder->model->sortField(), SearchParamsBuilder::SORT_DECREASE);
+        }
 
         $params->setFormat('fullJson');
-        $params->addSort($builder->model->sortField(), SearchParamsBuilder::SORT_DECREASE);
 
         $res = $this->searchClient->execute($params->build());
         return $res;
