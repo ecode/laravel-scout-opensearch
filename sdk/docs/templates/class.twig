@@ -1,0 +1,53 @@
+### 功能简介
+
+{{ description }}
+
+{{ longDescription|raw }}
+
+{% if isClass %}
+
+* 类名: {{ shortClass }}
+* 命名空间: {{ namespace }}
+
+{% endif %}
+
+{% if properties %}
+### 类属性
+{% endif %}
+
+{% for property in properties %}
+
+#### {{ property.name }}
+
+####
+```php
+{{ property.signature|raw }}
+```
+
+{% endfor %}
+
+
+{% for method in methods %}
+
+### {{ method.name }}
+
+#### 接口描述
+{{ method.description|raw }}
+
+#### 接口定义
+```php
+{{ method.signature|raw }}
+```
+
+{% if method.arguments %}
+#### 参数描述
+| 参数名称 | 类型 | 描述 |
+|----------|------------|-------------------------------------|
+{% for argument in method.arguments %}
+| {{ argument.name }} | {% if argument.type %}{{ argument.type|classLink }}{% else %}mixed{% endif %} | {% if argument.description %} {{ argument.description }}{% endif %} |
+
+{% endfor %}
+
+{% endif %}
+
+{% endfor %}
