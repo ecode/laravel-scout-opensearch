@@ -56,6 +56,7 @@ class SearchClient implements OpenSearchSearcherServiceIf {
      */
     public function execute(SearchParams $searchParams) {
         $path = self::getPath($searchParams);
+        
         $builder = new UrlParamsBuilder($searchParams);
         return $this->openSearchClient->get($path, $builder->getHttpParams());
     }

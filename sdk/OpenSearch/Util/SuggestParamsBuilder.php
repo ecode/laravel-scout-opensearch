@@ -56,6 +56,6 @@ class SuggestParamsBuilder {
         $query = $searchParams->query;
         $hits = $searchParams->config->hits;
 
-        return array('query' => $query, 'hits' => $hits);
+        return array('query' => $query, 'hit' => $hits);
     }
 }

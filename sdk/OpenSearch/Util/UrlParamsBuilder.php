@@ -49,6 +49,8 @@ class UrlParamsBuilder {
 
     const SEARCH_TYPE_SCAN = 'scan';
 
+    const ABTEST = "abtest";
+
     private static $summaryKeys = array(
         'summary_field' => 'SUMMARY_PARAM_SUMMARY_FIELD',
         'summary_len' => 'SUMMARY_PARAM_SUMMARY_LEN',
@@ -75,6 +77,9 @@ class UrlParamsBuilder {
         $this->initDisableFunctions($searchParams);
         $this->initRouteValue($searchParams);
         $this->initCustomParams($searchParams);
+        $this->initAbtest($searchParams);
+        $this->initUserId($searchParams);
+        $this->initRawQuery($searchParams);
     }
 
     public function initScroll($searchParams) {
@@ -151,6 +156,36 @@ class UrlParamsBuilder {
     public function initCustomParams($searchParams) {
         if (isset($searchParams->customParam)) {
             $this->params = array_merge($this->params, $searchParams->customParam);
+        }
+    }
+
+    public function initAbtest($searchParams) {
+        if (isset($searchParams->abtest)) {
+            $abtestParams = array();
+
+            if (isset($searchParams->abtest->sceneTag)) {
+                $abtestParams[] = sprintf("%s:%s", Constant::get('ABTEST_PARAM_SCENE_TAG'), $searchParams->abtest->sceneTag);
+            }
+
+            if (isset($searchParams->abtest->flowDivider)) {
+                $abtestParams[] = sprintf("%s:%s", Constant::get('ABTEST_PARAM_FLOW_DIVIDER'), $searchParams->abtest->flowDivider);
+            }
+
+            if (!empty($abtestParams)) {
+                $this->params[self::ABTEST] = implode(",", $abtestParams);
+            }
+        }
+    }
+
+    public function initUserId($searchParams) {
+        if (isset($searchParams->userId)) {
+            $this->params[Constant::get('USER_ID')] = $searchParams->userId;
+        }
+    }
+
+    public function initRawQuery($searchParams) {
+        if (isset($searchParams->rawQuery)) {
+            $this->params[Constant::get('RAW_QUERY')] = $searchParams->rawQuery;
         }
     }
 
