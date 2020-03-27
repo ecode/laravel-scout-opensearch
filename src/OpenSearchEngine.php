@@ -23,6 +23,7 @@ use OpenSearch\Util\SuggestParamsBuilder;
 use OpenSearch\Client\SearchClient;
 use OpenSearch\Generated\Common\OpenSearchResult;
 use OpenSearch\Util\SearchParamsBuilder;
+use \Illuminate\Support\Facades\Log;
 
 class OpenSearchEngine extends Engine
 {
@@ -33,6 +34,8 @@ class OpenSearchEngine extends Engine
     protected $config;
     protected $suggestName;
     protected $appName;
+    protected $logFile;
+    protected $debug;
 
     public function __construct(Repository $config)
     {
@@ -45,6 +48,8 @@ class OpenSearchEngine extends Engine
 
         $this->appName        = $config->get('scout.opensearch.appName');
         $this->suggestName    = $config->get('scout.opensearch.suggestName');
+        $this->logFile        = $config->get('scout.opensearch.logFile', 'opensearch');
+        $this->debug          = $config->get('scout.opensearch.debug');
 
         $this->client         = new OpenSearchClient($accessKeyID, $accessKeySecret, $host, $option);
         $this->documentClient = new DocumentClient($this->client);
@@ -81,6 +86,13 @@ class OpenSearchEngine extends Engine
      */
     public function map(Builder $builder, $results, $model)
     {
+        if ($this->debug) {
+            $monolog = Log::getMonolog();
+            $monolog->popHandler();
+            Log::useFiles(storage_path() . "/logs/{$this->logFile}.log");
+            Log::info(urldecode($results->traceInfo->tracer));
+        }
+
         $result = $this->checkResults($results);
 
         if (array_get($result, 'result.num', 0) === 0) {
@@ -146,7 +158,7 @@ class OpenSearchEngine extends Engine
             }
             $params->setFilter(implode(' AND ',$arr));
         }
-        
+
         // 设置排序条件
         if ($builder->orders) {
             foreach ($builder->orders as $value) {

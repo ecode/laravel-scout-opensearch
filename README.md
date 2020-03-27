@@ -17,7 +17,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
         Ecode\\OpenSearch\\OpenSearchServiceProvider
 
     Laravel 5.5 及以上，自动加载 `service provider`，无需手动添加。
-    
+
 3. 在 scout.php 添加配置
 
     ```
@@ -28,6 +28,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
                 'suggestName'  => env('OPENSEARCH_SUGGEST_NAME'),
                 'host'         => env('OPENSEARCH_HOST'),
                 'debug'        => env('OPENSEARCH_DEBUG'),
+                'logFile'      => env('OPENSEARCH_LOG_FILE'),
                 'timeout'      => env('OPENSEARCH_TIMEOUT'),
         ],
     ```
@@ -35,7 +36,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
 4. 修改 `.env` 配置 scout driver；
 
         SCOUT_DRIVER=opensearch
-        
+
 5. 添加 `.env` Open Search 相关配置。
 
         OPENSEARCH_ACCESS_KEY=ACCESS_KEY
@@ -44,6 +45,7 @@ Laravel Scout 的阿里云 Open Search 驱动。
         OPENSEARCH_APP_NAME=APP_NAME
         OPENSEARCH_SUGGEST_NAME=SUGGEST_NAME
         OPENSEARCH_DEBUG=true
+        OPENSEARCH_LOG_FILE=opensearch
 
 ## Desciption
 
