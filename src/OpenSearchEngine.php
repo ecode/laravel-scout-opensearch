@@ -151,11 +151,19 @@ class OpenSearchEngine extends Engine
             $params->setFetchFields($builder->fields);
         }
 
-        if ($builder->filters) {
-            //设置文档过滤条件
+        if ($builder->filters || $builder->rawFilters) {
+            $arr = [];
+
+            // 添加过滤条件
             foreach ($builder->filters as $value) {
                 $arr[] = implode('',$value);
             }
+
+            // 添加原生过滤条件
+            if($builder->rawFilters){
+                $arr = array_unique(array_merge($arr,$builder->rawFilters));
+            }
+
             $params->setFilter(implode(' AND ',$arr));
         }
 
@@ -175,8 +183,7 @@ class OpenSearchEngine extends Engine
 
         $params->setFormat('fullJson');
 
-        $res = $this->searchClient->execute($params->build());
-        return $res;
+        return $this->searchClient->execute($params->build());
     }
 
     /**
