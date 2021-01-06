@@ -177,7 +177,7 @@ class OpenSearchEngine extends Engine
                     $params->addSort($field, SearchParamsBuilder::SORT_DECREASE);
                 }
             }
-        } else {
+        } elseif($builder->model->sortField()) {
             $params->addSort($builder->model->sortField(), SearchParamsBuilder::SORT_DECREASE);
         }
 
